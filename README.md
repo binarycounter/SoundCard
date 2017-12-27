@@ -1,5 +1,8 @@
 # SoundCard
 
+---
+**Forked to change some stuff to allow WASAPI loopback recording, also streaming the output to another function while recording gapless**
+---
 SoundCard is a library for playing and recording audio without resorting to a CPython extension. Instead, it is implemented using the wonderful [CFFI](http://cffi.readthedocs.io/en/latest/) and the native audio libraries of Linux, Windows and macOS.
 
 SoundCard is cross-platform, and supports Linux/pulseaudio, Mac/coreaudio, and Windows/WASAPI. While the interface is identical across platforms, naming schemes and block sizes can vary between devices and platforms.
