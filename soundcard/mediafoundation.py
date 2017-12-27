@@ -388,6 +388,10 @@ class _Speaker(_Device):
         with self.player(samplerate, channels, blocksize) as p:
             p.play(data)
 
+    def recorder(self, samplerate, channels=None, blocksize=None):
+        if channels is None:
+            channels = self.channels
+        return _Recorder(self._audio_client(), samplerate, channels, blocksize, True)
 
 class _Microphone(_Device):
     """A soundcard input. Can be used to record audio.
@@ -428,7 +432,7 @@ class _AudioClient:
 
     """
 
-    def __init__(self, ptr, samplerate, channels, blocksize):
+    def __init__(self, ptr, samplerate, channels, blocksize, loopback=False):
         self._ptr = ptr
 
         if isinstance(channels, int):
@@ -477,7 +481,9 @@ class _AudioClient:
 
         sharemode = _combase.AUDCLNT_SHAREMODE_SHARED
         #             resample   | remix      | better-SRC | nopersist
-        streamflags = 0x00100000 | 0x80000000 | 0x08000000 | 0x00080000
+        streamflags = 0x00100000 | 0x80000000 | 0x08000000 | 0x00080000 
+        if loopback == True:
+            streamflags = streamflags | 0x00020000 #Loopback flag
         bufferduration = int(blocksize/samplerate * 1000_000_0) # in hecto-nanoseconds
         hr = self._ptr[0][0].lpVtbl.Initialize(self._ptr[0], sharemode, streamflags, bufferduration, 0, ppMixFormat[0], _ffi.NULL)
         _com.check_error(hr)
